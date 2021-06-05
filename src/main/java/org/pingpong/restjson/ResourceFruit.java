@@ -47,24 +47,25 @@ public class ResourceFruit {
         return service.list();
     }
 
+
     @POST
-    @Transactional
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    // curl -d '{"name":"Banana", "description":"Brings a Gorilla too"}'
+    @Transactional
+    // curl -d '{"name":"Banana", "description":"Brings a Gorilla too", "farmer": {"name": "Farmer Rick"}}'
     // -H "Content-Type: application/json" -X POST http://localhost:8080/fruits
     public Set<Fruit> add(@Valid Fruit fruit) {
         service.add(fruit);
         return this.list();
     }
-    @Path("/{name}")
     @DELETE
-    @Transactional
-    @Consumes(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-
-    public Set<Fruit> delete(@PathParam("name") String name) {
-        service.remove(name);
+    @Transactional
+    // curl -d '{"name":"Banana", "description":"Brings a Gorilla too", "farmer": {"name": "Farmer Rick"}}'
+    // -H "Content-Type: application/json" -X DELETE http://localhost:8080/fruits   
+    public Set<Fruit> delete(@Valid Fruit fruit) {
+        service.remove(fruit.getName());
         return list();
     }
 
