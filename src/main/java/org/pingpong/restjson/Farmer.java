@@ -22,7 +22,7 @@ public class Farmer extends PanacheEntityBase {
     @Id
     @Column(unique = true)
     // @JsonProperty(value = "supplier") //Copiado de David
-    public String name;
+    public String name; //name is supposed to be the id
 
     @Column
     public String location;
