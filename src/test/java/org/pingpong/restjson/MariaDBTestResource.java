@@ -1,52 +1,50 @@
 package org.pingpong.restjson;
-import org.testcontainers.containers.MariaDBContainer;
-
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
-import org.pingpong.restjson.MariaDBTestResource.Initializer;
-
 
 import java.util.HashMap;
 import java.util.Map;
 
-@QuarkusTestResource(Initializer.class)
-public class MariaDBTestResource {
+import org.testcontainers.containers.MariaDBContainer;
 
-    public static class Initializer implements QuarkusTestResourceLifecycleManager { //interfaz
-        private MariaDBContainer mariaDBContainer; //ccontenedor mariadb
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import org.pingpong.restjson.MariaDbTestResource.Initializer;
+
+@QuarkusTestResource(Initializer.class) //Registers the test resource
+public class MariaDbTestResource {
+
+    public static class Initializer implements QuarkusTestResourceLifecycleManager {
+        // Defines the test resource interface
+
+        // Sets MariaDB container object
+        private MariaDBContainer mariaDBContainer;
 
         @Override
         public Map<String, String> start() {
-            // Instanciar contenedor usando la imagen de mariadb, hay que definir application properties
+            // Instantiate MariaDB container with required Docker image
             this.mariaDBContainer = new MariaDBContainer<>("mariadb:latest");
-            // Tirar el contenedor
+            // Starts the container and waits until the container is accepting connections
             this.mariaDBContainer.start();
             return getConfigurationParameters();
         }
-
+        
         private Map<String, String> getConfigurationParameters() {
-/*           Esto pilla las properties que he definido en application properties y las aplica en el contenedor:
-
-            quarkus.datasource.username=developer
-            quarkus.datasource.password=developer
-            quarkus.datasource.jdbc.url=jdbc:mariadb://localhost:3000/developer*/
-
+            // Overrides Quarkus’s configuration to point database connection
+            // to the container one
+            
             final Map<String, String> conf = new HashMap<>();
             conf.put("quarkus.datasource.jdbc.url", this.mariaDBContainer.getJdbcUrl());
             conf.put("quarkus.datasource.username", this.mariaDBContainer.getUsername());
             conf.put("quarkus.datasource.password", this.mariaDBContainer.getPassword());
-
+            // conf.put("quarkus.datasource.driver", this.mariaDBContainer.getDriverClassName());
             return conf;
         }
 
         @Override
         public void stop() {
-            // Parar el contenedor
+            // Stops the container
             if (this.mariaDBContainer != null) {
                 this.mariaDBContainer.close();
             }
         }
-
     }
-
-    }
+}
